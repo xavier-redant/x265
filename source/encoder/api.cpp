@@ -419,12 +419,56 @@ void x265_configure_vbv_end(x265_encoder* enc, x265_picture* picture, double tot
          picture->vbvEndFlag = 1;
     }
 }
+
+static bool validateUserSEI(const x265_param *param, const x265_picture *picture)
+{
+    const x265_sei *userSEI = &picture->userSEI;
+    if (userSEI->numPayloads < 0)
+    {
+        x265_log(param, X265_LOG_ERROR, "Invalid user SEI payload count: %d\n", userSEI->numPayloads);
+        return false;
+    }
+    if (!userSEI->numPayloads)
+        return true;
+    if (!userSEI->payloads)
+    {
+        x265_log(param, X265_LOG_ERROR, "User SEI payload array is NULL\n");
+        return false;
+    }
+
+    for (int i = 0; i < userSEI->numPayloads; i++)
+    {
+        const x265_sei_payload *payload = &userSEI->payloads[i];
+        if (payload->payloadType != USER_DATA_REGISTERED_ITU_T_T35)
+            continue;
+        if (!payload->payload)
+        {
+            x265_log(param, X265_LOG_ERROR, "Registered ITU-T T.35 user SEI payload %d is NULL\n", i);
+            return false;
+        }
+
+        const int minPayloadSize = payload->payloadSize > 0 && payload->payload[0] == 0xFF ? 3 : 2;
+        if (payload->payloadSize < minPayloadSize)
+        {
+            x265_log(param, X265_LOG_ERROR,
+                     "Registered ITU-T T.35 user SEI payload %d has %d byte(s), "
+                     "but its country code requires at least %d\n",
+                     i, payload->payloadSize, minPayloadSize);
+            return false;
+        }
+    }
+    return true;
+}
+
 int x265_encoder_encode(x265_encoder* enc, x265_nal** pp_nal, uint32_t* pi_nal, x265_picture* pic_in, x265_picture* pic_out)
 {
     if (!enc)
         return -1;
 
     Encoder *encoder = static_cast<Encoder*>(enc);
+    if (pic_in && !validateUserSEI(encoder->m_param, pic_in))
+        return -1;
+
     int numEncoded;
 
 #ifdef SVT_HEVC

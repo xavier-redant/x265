@@ -436,6 +436,7 @@ jobs:
           ./x265 --version
           echo "--- Unit tests ---"
           ./test/TestBench
+          ./test/UserSEITest
 
       - name: Upload CLI binary
         uses: actions/upload-artifact@v7
@@ -503,6 +504,7 @@ jobs:
           test -f x265 && echo "10-bit CLI OK"
           ./x265 --version
           ./test/TestBench
+          ./test/UserSEITest
 
       - name: Upload CLI binary
         uses: actions/upload-artifact@v7
@@ -563,6 +565,7 @@ jobs:
           test -f x265 && echo "12-bit CLI OK"
           ./x265 --version
           ./test/TestBench
+          ./test/UserSEITest
 
       - name: Upload CLI binary
         uses: actions/upload-artifact@v7

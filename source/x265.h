@@ -346,6 +346,10 @@ typedef enum
 /* Arbitrary User SEI
  * Payload size is in bytes and the payload pointer must be non-NULL. 
  * Payload types and syntax can be found in Annex D of the H.265 Specification.
+ * USER_DATA_REGISTERED_ITU_T_T35 requires at least a country code and one
+ * payload byte. When the country code is 0xFF, it additionally requires a
+ * country-code extension byte. x265_encoder_encode() returns a negative value
+ * when either minimum is not met.
  * SEI Payload Alignment bits as described in Annex D must be included at the 
  * end of the payload if needed. The payload should not be NAL-encapsulated.
  * Payloads are written in the order of input */

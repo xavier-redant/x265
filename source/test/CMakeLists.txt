@@ -56,10 +56,15 @@ add_executable(TestBench ${NASM_SRC}
     intrapredharness.cpp intrapredharness.h)
 
 target_link_libraries(TestBench x265-static ${PLATFORM_LIBS})
+
+add_executable(UserSEITest userseiharness.cpp)
+target_link_libraries(UserSEITest x265-static ${PLATFORM_LIBS})
+
 if(LINKER_OPTIONS)
     if(EXTRA_LIB)
         list(APPEND LINKER_OPTIONS "-L..")
     endif(EXTRA_LIB)
     string(REPLACE ";" " " LINKER_OPTION_STR "${LINKER_OPTIONS}")
     set_target_properties(TestBench PROPERTIES LINK_FLAGS "${LINKER_OPTION_STR}")
+    set_target_properties(UserSEITest PROPERTIES LINK_FLAGS "${LINKER_OPTION_STR}")
 endif()
