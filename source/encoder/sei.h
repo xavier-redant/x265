@@ -424,10 +424,13 @@ public:
         WRITE_CODE(alpha_channel_cancel_flag, 1, "alpha_channel_cancel_flag");
         if (!alpha_channel_cancel_flag)
         {
+            const uint32_t alphaChannelBitDepthMinus8 = X265_DEPTH - 8;
+            const uint32_t alphaChannelValueBits = alphaChannelBitDepthMinus8 + 9;
+
             WRITE_CODE(0, 3, "alpha_channel_use_idc");
-            WRITE_CODE(0, 3, "alpha_channel_bit_depth_minus8");
-            WRITE_CODE(0, 9, "alpha_transparent_value");
-            WRITE_CODE(255, 9, "alpha_opaque_value");
+            WRITE_CODE(alphaChannelBitDepthMinus8, 3, "alpha_channel_bit_depth_minus8");
+            WRITE_CODE(0, alphaChannelValueBits, "alpha_transparent_value");
+            WRITE_CODE(PIXEL_MAX, alphaChannelValueBits, "alpha_opaque_value");
             WRITE_CODE(0, 1, "alpha_channel_incr_flag");
             WRITE_CODE(0, 1, "alpha_channel_clip_flag");
         }
