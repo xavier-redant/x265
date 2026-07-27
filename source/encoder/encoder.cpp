@@ -301,6 +301,22 @@ void Encoder::create()
         p->bThreadedME = 0;
     }
 
+    /* x265_check_params() rejects multiple slices without WPP, but WPP may
+     * have been disabled above, after that check ran. The frame encoder then
+     * has a single substream to share between the slices, so every slice
+     * beyond the first is serialized from an empty substream and reaches the
+     * bitstream as a slice segment header with no coding tree unit behind it.
+     * H.265 does not allow that: 7.3.8.1 codes at least one
+     * coding_tree_unit() and one end_of_slice_segment_flag per slice segment,
+     * and 6.3.1 makes every slice segment an integer number of coding tree
+     * units. Multiple slices are optional for an encoder, so normalize the
+     * request to the largest count that can still be emitted correctly. */
+    if (!p->bEnableWavefront && p->maxSlices > 1)
+    {
+        x265_log(p, X265_LOG_WARNING, "--wpp disabled, --slices reduced to 1\n");
+        p->maxSlices = 1;
+    }
+
     x265_log(p, X265_LOG_INFO, "Slices                              : %d\n", p->maxSlices);
 
     char buf[128];

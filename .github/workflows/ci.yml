@@ -437,6 +437,7 @@ jobs:
           echo "--- Unit tests ---"
           ./test/TestBench
           ./test/UserSEITest
+          ./test/SliceStructureTest
 
       - name: Upload CLI binary
         uses: actions/upload-artifact@v7
@@ -505,6 +506,7 @@ jobs:
           ./x265 --version
           ./test/TestBench
           ./test/UserSEITest
+          ./test/SliceStructureTest
 
       - name: Upload CLI binary
         uses: actions/upload-artifact@v7
@@ -566,6 +568,7 @@ jobs:
           ./x265 --version
           ./test/TestBench
           ./test/UserSEITest
+          ./test/SliceStructureTest
 
       - name: Upload CLI binary
         uses: actions/upload-artifact@v7
