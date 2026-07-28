@@ -2020,6 +2020,16 @@ int x265_check_params(x265_param* param)
         CHECK(param->isAbrLadderEnable, "Multiview encode and Abr-Ladder feature can't be enabled together");
     }
 #endif
+#if ENABLE_ALPHA && ENABLE_MULTIVIEW
+    /* Entropy::codeVPS() writes one layer_id_included_flag per additional layer
+     * set for each view and then another for each scalable layer, so enabling
+     * both features emits more flags than the vps_max_layer_id + 1 that H.265
+     * clause 7.3.2.1 allows, and vps_timing_info_present_flag no longer lands
+     * where the syntax puts it. Neither feature is required of an encoder, and
+     * their combination has no coherent VPS to emit, so refuse it. */
+    CHECK(param->bEnableAlpha && param->numViews > 1,
+          "Alpha encode and Multiview encode can't be enabled together");
+#endif
 #if ENABLE_SCC_EXT
     bool checkValid = false;
 

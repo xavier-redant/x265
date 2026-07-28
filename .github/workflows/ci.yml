@@ -438,6 +438,25 @@ jobs:
           ./test/TestBench
           ./test/UserSEITest
           ./test/SliceStructureTest
+          ./test/MultilayerVpsTest
+
+      - name: Build multilayer feature configuration
+        run: |
+          export PATH="/usr/lib/ccache:$PATH"
+          mkdir -p build/multilayer && cd build/multilayer
+          cmake ../../source \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DENABLE_SHARED=OFF \
+            -DENABLE_CLI=ON \
+            -DENABLE_ASSEMBLY=ON \
+            -DENABLE_TESTS=ON \
+            -DENABLE_ALPHA=ON \
+            -DENABLE_MULTIVIEW=ON \
+            -DCMAKE_C_COMPILER_LAUNCHER=ccache \
+            -DCMAKE_CXX_COMPILER_LAUNCHER=ccache
+          make -j$(nproc)
+          echo "--- Multilayer VPS conformance ---"
+          ./test/MultilayerVpsTest
 
       - name: Upload CLI binary
         uses: actions/upload-artifact@v7
@@ -507,6 +526,7 @@ jobs:
           ./test/TestBench
           ./test/UserSEITest
           ./test/SliceStructureTest
+          ./test/MultilayerVpsTest
 
       - name: Upload CLI binary
         uses: actions/upload-artifact@v7
@@ -569,6 +589,7 @@ jobs:
           ./test/TestBench
           ./test/UserSEITest
           ./test/SliceStructureTest
+          ./test/MultilayerVpsTest
 
       - name: Upload CLI binary
         uses: actions/upload-artifact@v7
