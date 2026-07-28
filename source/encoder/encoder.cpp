@@ -2664,14 +2664,24 @@ int Encoder::reconfigureParam(x265_param* encParam, x265_param* param)
         encParam->rdPenalty = param->rdPenalty;
         encParam->dynamicRd = param->dynamicRd;
         encParam->bEnableTransformSkip = param->bEnableTransformSkip;
-        encParam->bEnableAMP = param->bEnableAMP;
+        /* amp_enabled_flag is signalled in the SPS, and H.265 clause 7.4.2.4.2
+         * keeps an activated SPS active for the entire CVS: a repeated SPS
+         * carrying the active identifier must have the same content until the
+         * next CVS begins. Rewriting m_sps here changed that content inside a
+         * CVS -- with --open-gop the later keyframes are CRA pictures, which do
+         * not start a new one. The analysis path reads m_param->bEnableAMP, so
+         * leaving the parameter alone keeps encoder decisions aligned with the
+         * active SPS. The SPS-stability violation alone justifies this change;
+         * no separate slice-level conformance claim is made. */
+        if (encParam->bEnableAMP != param->bEnableAMP)
+            x265_log(m_param, X265_LOG_WARNING,
+                     "AMP cannot be reconfigured during encoding; keeping the encoder's existing AMP state.\n");
         if (param->confWinBottomOffset == 0 && param->confWinRightOffset == 0)
         {
             encParam->confWinBottomOffset = param->confWinBottomOffset;
             encParam->confWinRightOffset = param->confWinRightOffset;
         }
         /* Resignal changes in params in Parameter Sets */
-        m_sps.maxAMPDepth = (m_sps.bUseAMP = param->bEnableAMP && param->bEnableAMP) ? param->maxCUDepth : 0;
         m_pps.bTransformSkipEnabled = param->bEnableTransformSkip ? 1 : 0;
 
     }

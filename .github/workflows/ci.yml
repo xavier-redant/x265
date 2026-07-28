@@ -439,6 +439,7 @@ jobs:
           ./test/UserSEITest
           ./test/SliceStructureTest
           ./test/MultilayerVpsTest
+          ./test/AmpReconfigTest
 
       - name: Build multilayer feature configuration
         run: |
@@ -527,6 +528,7 @@ jobs:
           ./test/UserSEITest
           ./test/SliceStructureTest
           ./test/MultilayerVpsTest
+          ./test/AmpReconfigTest
 
       - name: Upload CLI binary
         uses: actions/upload-artifact@v7
@@ -590,6 +592,7 @@ jobs:
           ./test/UserSEITest
           ./test/SliceStructureTest
           ./test/MultilayerVpsTest
+          ./test/AmpReconfigTest
 
       - name: Upload CLI binary
         uses: actions/upload-artifact@v7
